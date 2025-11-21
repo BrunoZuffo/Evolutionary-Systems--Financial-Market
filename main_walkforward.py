@@ -1,73 +1,69 @@
+# main_walkforward.py
 import numpy as np
 import matplotlib.pyplot as plt
+import json
 
 from data.loaders import load_brazil_stocks
 from evolution.ga import run_ga, evaluate_genome
 
 
-def walkforward_petr_vale(
-    test_block_days=250,      # ~ 1 ano de pregão
-    population_size=150,
-    generations=60,
-    fee=0.0005
+def walkforward_deslizante(
+    Px,
+    Py,
+    train_years=6,
+    test_years=1,
+    population_size=120,
+    generations=40,
+    fee=0.0005,
+    seed_base=42,
 ):
-    # ==============================
-    # 1) Carregar 10 anos de dados
-    # ==============================
-    Px, Py = load_brazil_stocks(
-        "PETR4.SA",
-        "VALE3.SA",
-        period="10y",
-        interval="1d"
-    )
+    """
+    Walk-forward deslizante:
+    - Janela de treino: train_years
+    - Janela de teste:  test_years
+    - Anda para frente pelo tamanho da janela de teste.
 
-    Px = np.asarray(Px, dtype=float).reshape(-1)
-    Py = np.asarray(Py, dtype=float).reshape(-1)
-    T = min(len(Px), len(Py))
-    Px = Px[:T]
-    Py = Py[:T]
+    Retorna:
+        wf_results (lista de dicts com treino/teste por janela)
+    """
+    n = len(Px)
+    dias_por_ano = 252  # aproximado
 
-    print(f"Total de candles (dias): {T}")
+    train_len = train_years * dias_por_ano
+    test_len = test_years * dias_por_ano
 
-    # ponto inicial do primeiro teste:
-    # ~70% do total
-    first_train_end = int(0.7 * T)
-    print(f"Primeiro treino: 0 .. {first_train_end-1}")
-    print(f"Cada bloco de teste: {test_block_days} dias\n")
+    wf_results = []
+    wf_idx = 0
 
-    wf_results = []  # para guardar métricas por janela
+    start_train = 0
+    while True:
+        end_train = start_train + train_len
+        end_test = end_train + test_len
 
-    train_end = first_train_end
-    wf_id = 0
+        if end_test > n:
+            break  # acabou o histórico para outra janela completa
 
-    while train_end + test_block_days <= T:
-        wf_id += 1
-        test_start = train_end
-        test_end = train_end + test_block_days
+        wf_idx += 1
+        print(f"\n=== WF #{wf_idx} | treino [{start_train}:{end_train}] teste [{end_train}:{end_test}] ===")
 
-        print("=" * 60)
-        print(f"Janela WF #{wf_id}")
-        print(f"Treino: 0 .. {train_end-1}  (n={train_end})")
-        print(f"Teste : {test_start} .. {test_end-1}  (n={test_block_days})")
+        Px_train = Px[start_train:end_train]
+        Py_train = Py[start_train:end_train]
 
-        # -------------------------
-        # 2) Treino (GA)
-        # -------------------------
-        train_Px = Px[:train_end]
-        train_Py = Py[:train_end]
+        Px_test = Px[end_train:end_test]
+        Py_test = Py[end_train:end_test]
 
-        best_train, history = run_ga(
-            train_Px, train_Py,
+        # --- GA no TREINO ---
+        best_train, history_train = run_ga(
+            Px_train,
+            Py_train,
             population_size=population_size,
             generations=generations,
             fee=fee,
-            seed=42 + wf_id  # muda seed por janela
+            seed=seed_base + wf_idx,
         )
 
-        genome = best_train["genome"]
-
         print("\n> Melhor indivíduo no TREINO:")
-        print("Genoma:", genome)
+        print("Genoma:", best_train["genome"])
         print("Fitness treino:", best_train["fitness"])
         print("Retorno treino (%):", best_train["total_return_pct"])
         print("MDD treino (%):", best_train["mdd_pct"])
@@ -75,13 +71,8 @@ def walkforward_petr_vale(
         print("Sortino treino:", best_train["sortino"])
         print("N trades treino:", best_train["n_trades"])
 
-        # -------------------------
-        # 3) Avaliação no TESTE
-        # -------------------------
-        test_Px = Px[test_start:test_end]
-        test_Py = Py[test_start:test_end]
-
-        eval_test = evaluate_genome(genome, test_Px, test_Py, fee)
+        # --- Aplica mesmo genoma no TESTE ---
+        eval_test = evaluate_genome(best_train["genome"], Px_test, Py_test, fee=fee)
 
         print("\n> Desempenho no TESTE (sem reotimizar):")
         print("Retorno teste (%):", eval_test["total_return_pct"])
@@ -92,54 +83,58 @@ def walkforward_petr_vale(
         print("Retornos por janela teste:", eval_test["window_returns"])
 
         wf_results.append({
-            "wf_id": wf_id,
-            "train_start": 0,
-            "train_end": train_end,
-            "test_start": test_start,
-            "test_end": test_end,
-            "genome": genome,
-            "fitness_train": best_train["fitness"],
-            "ret_train": best_train["total_return_pct"],
-            "mdd_train": best_train["mdd_pct"],
-            "calmar_train": best_train["calmar"],
-            "sortino_train": best_train["sortino"],
-            "n_trades_train": best_train["n_trades"],
-            "ret_test": eval_test["total_return_pct"],
-            "mdd_test": eval_test["mdd_pct"],
-            "calmar_test": eval_test["calmar"],
-            "sortino_test": eval_test["sortino"],
-            "n_trades_test": eval_test["n_trades"],
-            "history": history,
-            "equity_train": best_train["result"]["equity_curve"],
-            "equity_test": eval_test["result"]["equity_curve"],
+            "wf_idx": wf_idx,
+            "start_train": start_train,
+            "end_train": end_train,
+            "end_test": end_test,
+            "best_train": best_train,
+            "history_train": history_train,
+            "eval_test": eval_test,
         })
 
-        # avança a janela:
-        train_end = test_end  # expanding: treino passa a incluir esse bloco de teste
+        # anda a janela pelo tamanho do bloco de teste
+        start_train += test_len
 
     return wf_results
 
 
 if __name__ == "__main__":
-    wf_results = walkforward_petr_vale(
-        test_block_days=250,   # ~1 ano de teste por bloco
-        population_size=150,
-        generations=60,
-        fee=0.0005
+    np.random.seed(42)
+
+    # 1) Carrega 10 anos de PETR4 x VALE3 (diário)
+    Px, Py = load_brazil_stocks(
+        "PETR4.SA",
+        "VALE3.SA",
+        period="10y",
+        interval="1d",
     )
 
-    # =================================
-    # 4) Gráficos de resumo do WF
-    # =================================
-    # Se não tiver nenhuma janela, aborta
+    Px = np.asarray(Px, dtype=float).reshape(-1)
+    Py = np.asarray(Py, dtype=float).reshape(-1)
+    n = min(len(Px), len(Py))
+    Px = Px[:n]
+    Py = Py[:n]
+
+    # 2) Executa WF
+    wf_results = walkforward_deslizante(
+        Px,
+        Py,
+        train_years=6,
+        test_years=1,
+        population_size=120,
+        generations=40,
+        fee=0.0005,
+        seed_base=100,
+    )
+
     if not wf_results:
-        print("Nenhuma janela WF foi gerada (dados insuficientes).")
+        print("Nenhuma janela WF gerada (histórico insuficiente).")
         raise SystemExit()
 
-    # ---- 4.1. Retorno treino x teste por janela ----
-    wf_ids = [r["wf_id"] for r in wf_results]
-    ret_train = [r["ret_train"] for r in wf_results]
-    ret_test = [r["ret_test"] for r in wf_results]
+    # 3) Gráfico de retorno por janela (treino x teste)
+    wf_ids = [r["wf_idx"] for r in wf_results]
+    ret_train = [r["best_train"]["total_return_pct"] for r in wf_results]
+    ret_test = [r["eval_test"]["total_return_pct"] for r in wf_results]
 
     plt.figure(figsize=(10, 5))
     plt.plot(wf_ids, ret_train, marker="o", label="Treino")
@@ -152,35 +147,42 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.show()
 
-    # ---- 4.2. Fitness por geração da última janela ----
+    # 4) Última janela WF – plots detalhados + salvar best_genome.json
     last = wf_results[-1]
-    history = last["history"]
+    last_wf_idx = last["wf_idx"]
+    history_train = last["history_train"]
+    best_train = last["best_train"]
+    eval_test = last["eval_test"]
 
+    # 4.1 Fitness por geração (última WF)
     plt.figure(figsize=(10, 4))
-    plt.plot(history, marker="o", linewidth=1)
-    plt.title(f"Última janela WF #{last['wf_id']} - Fitness por geração")
+    plt.plot(history_train, marker="o")
+    plt.title(f"Última janela WF #{last_wf_idx} - Fitness por geração")
     plt.xlabel("Geração")
     plt.ylabel("Fitness")
     plt.grid(True)
     plt.tight_layout()
     plt.show()
 
-    # ---- 4.3. Equity treino vs teste na última janela ----
-    eq_train = last["equity_train"]
-    eq_test = last["equity_test"]
+    # 4.2 Equity treino x teste (última WF)
+    eq_train = best_train["result"]["equity_curve"]
+    eq_test = eval_test["result"]["equity_curve"]
 
     plt.figure(figsize=(10, 5))
-    plt.plot(eq_train, label="Treino", linewidth=1)
-    plt.plot(
-        range(len(eq_train), len(eq_train) + len(eq_test)),
-        eq_test,
-        label="Teste",
-        linewidth=1
-    )
-    plt.title(f"Última janela WF #{last['wf_id']} - Equity treino x teste")
+    plt.plot(eq_train, label="Treino")
+    offset = len(eq_train)
+    plt.plot(np.arange(offset, offset + len(eq_test)), eq_test, label="Teste")
+    plt.title(f"Última janela WF #{last_wf_idx} - Equity treino x teste")
     plt.xlabel("Tempo (candles)")
     plt.ylabel("Equity")
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
     plt.show()
+
+    # 4.3 Salva best_genome.json com o genoma da ÚLTIMA janela de treino
+    best_genome = best_train["genome"]
+    with open("best_genome.json", "w") as f:
+        json.dump(best_genome, f, indent=2)
+    print("\n[INFO] best_genome.json salvo com o melhor genoma da última janela WF:")
+    print(best_genome)

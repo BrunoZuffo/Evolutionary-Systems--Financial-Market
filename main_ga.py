@@ -8,18 +8,19 @@ from evolution.ga import run_ga
 if __name__ == "__main__":
     np.random.seed(42)
 
-    # Carrega 10 anos diários
-
+    # ==========================
+    # 1) Carrega 10 anos diários
+    # ==========================
     Px, Py = load_brazil_stocks(
         "PETR4.SA",
         "VALE3.SA",
-        period="10y",
-        interval="1d"
+        period="10y",   # 10 anos
+        interval="1d",  # candles diários
     )
 
-
-    # Roda GA UMA vez
-
+    # ==========================
+    # 2) Roda GA UMA vez (sem walk-forward)
+    # ==========================
     best, history = run_ga(
         Px, Py,
         population_size=150,
@@ -38,9 +39,9 @@ if __name__ == "__main__":
     print("N trades:", best["n_trades"])
     print("Retornos por janela (%):", best["window_returns"])
 
-
-    # Gráficos
-
+    # ==========================
+    # 3) Gráfico – fitness por geração
+    # ==========================
     plt.figure(figsize=(10, 4))
     plt.plot(history, marker="o", linewidth=1)
     plt.title("Melhor fitness por geração - PETR4.SA x VALE3.SA")
@@ -50,6 +51,9 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.show()
 
+    # ==========================
+    # 4) Gráfico – equity do melhor indivíduo
+    # ==========================
     equity = best["result"]["equity_curve"]
 
     plt.figure(figsize=(10, 4))
