@@ -12,13 +12,14 @@ if __name__ == "__main__":
 
     result = backtest_lead_lag(
         Px, Py,
-        threshold=-0.01,
+        threshold=-0.002,  # bem mais “sensível”
         lag=1,
         tp=0.02,
         sl=-0.01,
         max_hold=10,
         fee=0.0005
     )
+
 
     print("\n=== RESULTADOS ===")
     print("Capital inicial:", result["initial_cash"])

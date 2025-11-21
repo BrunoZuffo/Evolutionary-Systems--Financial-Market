@@ -40,10 +40,13 @@ def backtest_lead_lag(
                 if t + lag < len(Py):
                     entry_idx = t + lag
                     entry_price = Py[entry_idx]
-                    size = cash / entry_price
+
+                    # calcula o tamanho da posição já considerando a taxa
+                    size = cash / (entry_price * (1.0 + fee))
                     cost = size * entry_price
                     fee_paid = cost * fee
-                    if cash >= cost + fee_paid:
+
+                    if size > 0:
                         cash -= cost + fee_paid
                         position = size
                         trades.append({
@@ -51,7 +54,8 @@ def backtest_lead_lag(
                             "entry_price": entry_price,
                             "size": size,
                             "fee_entry": fee_paid
-                        })
+                    })
+
         else:
             trade = trades[-1]
             hold_time = t - trade["entry_t"]
