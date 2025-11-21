@@ -185,8 +185,8 @@ def tournament_selection(population, k=3):
 
 def run_ga(
     Px, Py,
-    population_size=30,
-    generations=30,
+    population_size=150,
+    generations=60,
     elite_frac=0.2,
     mutation_rate=0.3,
     tournament_size=3,
