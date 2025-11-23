@@ -47,29 +47,30 @@ Cada indivíduo é um dicionário contendo:
   "lag": int,
   "max_hold": int
 }
+´´´
 
-### Fenótipo
+# Fenótipo
 
 É uma estratégia de trading aplicada ao histórico de PETR4 e VALE3.
 
-# Operadores Evolutivos
+## Operadores Evolutivos
 
-## Seleção: Torneio (pressiona melhores indivíduos sem perder diversidade)
+ -**Seleção: Torneio (pressiona melhores indivíduos sem perder diversidade)**
 
-## Crossover: recombinação uniforme (mistura genética de pais)
+ -**Crossover: recombinação uniforme (mistura genética de pais)**
 
-#### Mutação: perturbação pequena nos genes (evita convergência prematura)
+ -**Mutação: perturbação pequena nos genes (evita convergência prematura)**
 
-#### Elitismo: melhor indivíduo passa direto para próxima geração
+ -**Elitismo: melhor indivíduo passa direto para próxima geração**
 
-### Fitness
+## Fitness
 
 Três componentes:
 
-# Retorno total
+ -**Retorno total**
 
-# Penalização por drawdown
+ -**Penalização por drawdown**
 
-# Penalização por número excessivo de trades
+ -**Penalização por número excessivo de trades**
 
 O objetivo final é maximizar retorno ajustado ao risco.
