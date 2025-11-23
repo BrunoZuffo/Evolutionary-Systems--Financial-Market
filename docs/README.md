@@ -48,30 +48,147 @@ Cada indivíduo é um dicionário contendo:
   "max_hold": int
 }
 
----
-
-### Fenótipo
-
+Fenótipo
 É uma estratégia de trading aplicada ao histórico de PETR4 e VALE3.
+Operadores Evolutivos
+Seleção: Torneio (pressiona melhores indivíduos sem perder diversidade)
 
-## Operadores Evolutivos
 
- -**Seleção: Torneio (pressiona melhores indivíduos sem perder diversidade)**
+Crossover: recombinação uniforme (mistura genética de pais)
 
- -**Crossover: recombinação uniforme (mistura genética de pais)**
 
- -**Mutação: perturbação pequena nos genes (evita convergência prematura)**
+Mutação: perturbação pequena nos genes (evita convergência prematura)
 
- -**Elitismo: melhor indivíduo passa direto para próxima geração**
 
-## Fitness
+Elitismo: melhor indivíduo passa direto para próxima geração
 
+
+Fitness
 Três componentes:
+Retorno total
 
- -**Retorno total**
 
- -**Penalização por drawdown**
+Penalização por drawdown
 
- -**Penalização por número excessivo de trades**
+
+Penalização por número excessivo de trades
+
 
 O objetivo final é maximizar retorno ajustado ao risco.
+
+📊 3. Dados Financeiros
+Fonte: Yahoo Finance (yfinance)
+
+
+Timeframe: Diário
+
+
+Ações: PETR4.SA e VALE3.SA
+
+
+Período total: ~10 anos
+
+
+
+🧪 4. Módulos do Projeto
+1️⃣ main_ga.py
+Treina o AG e salva:
+best_genome.json
+
+2️⃣ main_walkforward.py
+Executa treinamento rolando no tempo (walk-forward).
+ Gera avaliações out-of-sample.
+3️⃣ realtime_signal.py
+Gera sinais em tempo real, com logging em:
+signals_log.csv
+
+4️⃣ realtime_bot.py
+Simula trades reais com base nos sinais.
+ Gera:
+trades_log.csv
+
+5️⃣ analyze_signals.py
+Avalia a validade dos sinais (ex.: BUY_Y → lucro do dia seguinte).
+6️⃣ analyze_results.py
+📌 Será usado para comparar o desempenho da estratégia com o Buy & Hold.
+ (Métricas: retorno, drawdown, sharpe, nº de trades)
+
+⚙️ 5. Instalação
+Criar o ambiente virtual:
+python -m venv .venv
+
+Ativar:
+Windows
+.\.venv\Scripts\activate
+
+Instalar dependências:
+pip install -r requirements.txt
+
+
+▶️ 6. Como Rodar o Projeto
+Treinar o Algoritmo Genético
+python main_ga.py
+
+Executar o Walk-Forward
+python main_walkforward.py
+
+Gerar sinais com o modelo treinado
+python realtime_signal.py
+
+Gerar trades simulados
+python realtime_bot.py
+
+Analisar qualidade dos sinais
+python analyze_signals.py
+
+Analisar resultados finais
+python analyze_results.py
+
+
+📈 7. Exemplo de Saída (sinais e trades)
+signals_log.csv:
+ Todos os sinais emitidos pelo modelo.
+
+
+trades_log.csv:
+ Cada operação simulada com:
+
+
+retorno,
+
+
+retorno em %,
+
+
+take-profit/stop,
+
+
+motivo de saída,
+
+
+equity após o trade.
+
+
+
+🎥 8. Vídeo Explicativo (Obrigatório)
+👉 Link do vídeo será colocado aqui após gravação.
+
+📚 9. Referências
+Material da disciplina SSC0713
+
+
+“Algorithms for Optimization” — Kochenderfer
+
+
+B3
+
+
+Yahoo Finance API (yfinance)
+
+
+
+👨‍💻 Autor
+Bruno Zuffo
+ ICMC — USP São Carlos
+ Curso: Engenharia de Computação
+ Disciplina: SSC0713 – Sistemas Evolutivos
