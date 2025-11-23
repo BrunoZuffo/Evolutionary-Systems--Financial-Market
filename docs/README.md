@@ -3,7 +3,7 @@
 Este projeto implementa um **Algoritmo Genético (AG)** para evoluir **estratégias de trading** baseadas na relação entre duas ações brasileiras: **PETR4.SA** e **VALE3.SA**.  
 O objetivo é otimizar parâmetros que geram sinais de compra/venda para o próximo candle, usando dados reais da B3 via Yahoo Finance.
 
-O trabalho foi desenvolvido para a disciplina:
+Trabalho desenvolvido para a disciplina:
 
 **SSC0713 – Sistemas Evolutivos Aplicados à Robótica  
 ICMC – USP São Carlos  
@@ -36,9 +36,7 @@ Essa estratégia gera sinais (fenótipo), que são avaliados via backtesting par
 
 ## 🔍 2. Estrutura Evolutiva
 
-### Representação (Genótipo)
-Cada indivíduo é um dicionário contendo:
-
+### **Genótipo**
 ```python
 {
   "threshold": float,
@@ -47,148 +45,155 @@ Cada indivíduo é um dicionário contendo:
   "lag": int,
   "max_hold": int
 }
+```
 
-Fenótipo
-É uma estratégia de trading aplicada ao histórico de PETR4 e VALE3.
-Operadores Evolutivos
-Seleção: Torneio (pressiona melhores indivíduos sem perder diversidade)
+### **Fenótipo**
+- Estratégia de trading derivada desses parâmetros  
+- Geração de sinais BUY_Y ou FLAT  
+- Avaliada em dados históricos
 
+### **Operadores Evolutivos**
+- **Seleção:** Torneio (pressiona melhores indivíduos sem perder diversidade)  
+- **Crossover:** recombinação uniforme  
+- **Mutação:** perturbação gaussiana nos genes  
+- **Elitismo:** melhor indivíduo passa direto para a próxima geração  
 
-Crossover: recombinação uniforme (mistura genética de pais)
-
-
-Mutação: perturbação pequena nos genes (evita convergência prematura)
-
-
-Elitismo: melhor indivíduo passa direto para próxima geração
-
-
-Fitness
+### **Fitness**
 Três componentes:
-Retorno total
+- **Retorno total**  
+- **Penalização por drawdown**  
+- **Penalização por número excessivo de trades**
 
+---
 
-Penalização por drawdown
+## 📊 3. Dados Financeiros
 
+- Fonte: Yahoo Finance (`yfinance`)  
+- Timeframe: Diário  
+- Ações: **PETR4.SA** e **VALE3.SA**  
+- Período total: ~10 anos  
 
-Penalização por número excessivo de trades
+---
 
+## 🧪 4. Módulos do Projeto
 
-O objetivo final é maximizar retorno ajustado ao risco.
-
-📊 3. Dados Financeiros
-Fonte: Yahoo Finance (yfinance)
-
-
-Timeframe: Diário
-
-
-Ações: PETR4.SA e VALE3.SA
-
-
-Período total: ~10 anos
-
-
-
-🧪 4. Módulos do Projeto
-1️⃣ main_ga.py
+### **1️⃣ main_ga.py**
 Treina o AG e salva:
-best_genome.json
+- `best_genome.json`
 
-2️⃣ main_walkforward.py
-Executa treinamento rolando no tempo (walk-forward).
- Gera avaliações out-of-sample.
-3️⃣ realtime_signal.py
-Gera sinais em tempo real, com logging em:
-signals_log.csv
+### **2️⃣ main_walkforward.py**
+Executa treinamento rolando no tempo (walk-forward):
+- Avaliação **out-of-sample**
 
-4️⃣ realtime_bot.py
-Simula trades reais com base nos sinais.
- Gera:
-trades_log.csv
+### **3️⃣ realtime_signal.py**
+Gera sinais com o melhor genoma:
+- Salva em `signals_log.csv`
 
-5️⃣ analyze_signals.py
-Avalia a validade dos sinais (ex.: BUY_Y → lucro do dia seguinte).
-6️⃣ analyze_results.py
-📌 Será usado para comparar o desempenho da estratégia com o Buy & Hold.
- (Métricas: retorno, drawdown, sharpe, nº de trades)
+### **4️⃣ realtime_bot.py**
+Simula trades reais baseado nos sinais:
+- Salva em `trades_log.csv`
 
-⚙️ 5. Instalação
-Criar o ambiente virtual:
+### **5️⃣ analyze_signals.py**
+Analisa qualidade de cada **BUY_Y**:
+- Verifica retorno do dia seguinte
+
+### **6️⃣ analyze_results.py**
+Comparará resultados com:
+- **Buy & Hold**
+- **Random baseline**
+- **Estratégia evoluída**
+- (Inclui métricas como retorno, drawdown, sharpe, nº trades)
+
+---
+
+## ⚙️ 5. Instalação
+
+### **Criar ambiente virtual**
+```bash
 python -m venv .venv
+```
 
-Ativar:
-Windows
-.\.venv\Scripts\activate
+### **Ativar**
+Windows:
+```bash
+.\.venv\Scriptsctivate
+```
 
-Instalar dependências:
+### **Instalar dependências**
+```bash
 pip install -r requirements.txt
+```
 
+---
 
-▶️ 6. Como Rodar o Projeto
-Treinar o Algoritmo Genético
+## ▶️ 6. Como Rodar o Projeto
+
+### **Treinar o Algoritmo Genético**
+```bash
 python main_ga.py
+```
 
-Executar o Walk-Forward
+### **Executar o Walk-Forward**
+```bash
 python main_walkforward.py
+```
 
-Gerar sinais com o modelo treinado
+### **Gerar sinais com o modelo treinado**
+```bash
 python realtime_signal.py
+```
 
-Gerar trades simulados
+### **Gerar operações simuladas**
+```bash
 python realtime_bot.py
+```
 
-Analisar qualidade dos sinais
+### **Analisar qualidade dos sinais**
+```bash
 python analyze_signals.py
+```
 
-Analisar resultados finais
+### **Analisar performance da estratégia**
+```bash
 python analyze_results.py
+```
 
+---
 
-📈 7. Exemplo de Saída (sinais e trades)
-signals_log.csv:
- Todos os sinais emitidos pelo modelo.
+## 📈 7. Exemplo de Saída
 
+### **signals_log.csv**
+Lista de todos os sinais gerados:
+- Data
+- Retorno de PETR4
+- Parâmetros aplicados
+- Sinal (BUY_Y / FLAT)
 
-trades_log.csv:
- Cada operação simulada com:
+### **trades_log.csv**
+Cada trade inclui:
+- Preço de entrada
+- Preço de saída
+- Retorno
+- Motivo da saída
+- Capital acumulado
 
+---
 
-retorno,
+## 🎥 8. Vídeo Explicativo (Obrigatório)
+📌 Link será inserido aqui após gravação.
 
+---
 
-retorno em %,
+## 📚 9. Referências
 
+- Material da disciplina SSC0713  
+- “Algorithms for Optimization” — Kochenderfer  
+- Yahoo Finance API (`yfinance`)  
+- B3  
 
-take-profit/stop,
+---
 
-
-motivo de saída,
-
-
-equity após o trade.
-
-
-
-🎥 8. Vídeo Explicativo (Obrigatório)
-👉 Link do vídeo será colocado aqui após gravação.
-
-📚 9. Referências
-Material da disciplina SSC0713
-
-
-“Algorithms for Optimization” — Kochenderfer
-
-
-B3
-
-
-Yahoo Finance API (yfinance)
-
-
-
-👨‍💻 Autor
-Bruno Zuffo
- ICMC — USP São Carlos
- Curso: Engenharia de Computação
- Disciplina: SSC0713 – Sistemas Evolutivos
+## 👨‍💻 Autor
+**Bruno Zuffo**  
+Engenharia de Computação — ICMC/USP  
+Disciplina: SSC0713 — Sistemas Evolutivos
