@@ -47,9 +47,10 @@ Cada indivíduo é um dicionário contendo:
   "lag": int,
   "max_hold": int
 }
-´´´
 
-# Fenótipo
+---
+
+### Fenótipo
 
 É uma estratégia de trading aplicada ao histórico de PETR4 e VALE3.
 
