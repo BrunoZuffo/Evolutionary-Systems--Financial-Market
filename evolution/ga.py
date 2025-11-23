@@ -215,10 +215,10 @@ def run_ga(
     history = []
 
     for gen in range(generations):
-        # 2) Ordena por fitness
+        # 2) Ordena por fitness -> ELITISMO
         population.sort(key=lambda ind: ind["fitness"], reverse=True)
         best = population[0]
-        history.append(best["fitness"])
+        history.append(best["fitness"]) #cópia dos melhores
 
         print(
             f"Geração {gen+1}/{generations} | "
@@ -235,11 +235,11 @@ def run_ga(
         new_population = population[:elite_count]
 
         # 4) Geração de filhos
-        while len(new_population) < population_size:
+        while len(new_population) < population_size: #seleção por torneio
             parent1 = tournament_selection(population, k=tournament_size)
             parent2 = tournament_selection(population, k=tournament_size)
-            child_genome = crossover(parent1["genome"], parent2["genome"])
-            child_genome = mutate(child_genome, mutation_rate=mutation_rate)
+            child_genome = crossover(parent1["genome"], parent2["genome"]) #crossover
+            child_genome = mutate(child_genome, mutation_rate=mutation_rate)#mutação
 
             eval_res = evaluate_genome(child_genome, Px, Py, fee)
             new_population.append({
