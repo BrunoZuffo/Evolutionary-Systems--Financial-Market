@@ -1,3 +1,11 @@
+#A MAIN.PY SÓ SERVE PARA:
+
+#depurar a lógica,
+
+#ver se fee, tp, sl, max_hold estão funcionando,
+
+#entender o comportamento da estratégia em um cenário controlado.
+
 import numpy as np
 import matplotlib.pyplot as plt
 from core.leadlag import backtest_lead_lag
