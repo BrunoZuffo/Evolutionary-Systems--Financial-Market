@@ -1,3 +1,14 @@
+#SEMPRE:
+#./.venv/Scripts/Activate.ps1
+#pip install -requirements.txt -> só quando mudar os requirements.txt
+
+#DIA D:
+#    python realtime_signal.py -> após fechamento do mercado ( gera o sinal se deve comprar ou fazer nada )
+
+#DIA D+1:
+#    python realtime_bot.py -> testa com toda a série da b3 pra rodar o backtest com o best 
+#    python analyze_signals.py -> analisa os sinais gerados pelo realtime_signal.py e ve se ele foi condizente com as expectativas ou não
+
 # main_ga.py
 import numpy as np
 import matplotlib.pyplot as plt
