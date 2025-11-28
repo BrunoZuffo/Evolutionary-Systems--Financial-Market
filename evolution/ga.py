@@ -239,7 +239,7 @@ def run_ga(
             parent1 = tournament_selection(population, k=tournament_size)
             parent2 = tournament_selection(population, k=tournament_size)
             child_genome = crossover(parent1["genome"], parent2["genome"]) #crossover
-            child_genome = mutate(child_genome, mutation_rate=mutation_rate)#mutação
+            child_genome = mutate(child_genome, mutation_rate=mutation_rate) #mutação
 
             eval_res = evaluate_genome(child_genome, Px, Py, fee)
             new_population.append({

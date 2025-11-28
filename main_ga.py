@@ -34,8 +34,8 @@ if __name__ == "__main__":
     print("Fitness:", best["fitness"])
     print("Retorno total (%):", best["total_return_pct"])
     print("Max Drawdown (%):", best["mdd_pct"])
-    print("Calmar:", best["calmar"])
-    print("Sortino:", best["sortino"])
+    print("Calmar:", best["calmar"])  # RETORNO ANUALIZADO
+    print("Sortino:", best["sortino"]) # retorno ajustado pelas perdas ruins
     print("N trades:", best["n_trades"])
     print("Retornos por janela (%):", best["window_returns"])
 

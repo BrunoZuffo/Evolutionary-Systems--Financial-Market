@@ -1,40 +1,39 @@
 # Resultados da Estratégia Evolutiva
 
-_Última atualização: 2025-11-22 21:14:16_
+_Última atualização: 2025-11-28 00:49:23_
 
 ---
 
 ## Resumo geral
 
 - Capital inicial estimado: **R$ 1000.00**
-- Capital final: **R$ 3844.44**
-- Retorno total: **284.44%**
-- Max Drawdown: **-32.57%**
+- Capital final: **R$ 5877.60**
+- Retorno total: **487.76%**
+- Max Drawdown: **-29.52%**
 
 ## Métricas por trade
 
-- Nº de trades: **152**
-- Retorno médio por trade: **1.025%**
-- Volatilidade dos retornos (desvio padrão): **5.228%**
-- Sharpe (por trade): **2.418**
+- Nº de trades: **149**
+- Retorno médio por trade: **1.334%**
+- Volatilidade dos retornos (desvio padrão): **5.292%**
+- Sharpe (por trade): **3.077**
 - Winrate: **67.11%**
 - Lossrate: **32.89%**
 - Trades ~0 (flat): **0.00%**
 
 ## Baseline: Buy & Hold aproximado de Y
 
-- Retorno Buy & Hold (aprox.): **359.20%**
-- Equity final Buy & Hold (aprox.): **R$ 4591.97**
+- Retorno Buy & Hold (aprox.): **322.32%**
+- Equity final Buy & Hold (aprox.): **R$ 4223.18**
 
 ## Estatísticas por motivo de saída
 
 ```
-             count      mean  median      min      max
-exit_reason                                           
-EOD              1 -0.876200 -0.8762  -0.8762  -0.8762
-SL              31 -7.059948 -6.3689 -12.5650  -5.6439
-TIME            27 -1.078400 -0.5804  -5.4108   2.0071
-TP              93  4.351868  3.5018   2.2162  21.2472
+             count      mean  median     min      max
+exit_reason                                          
+SL              43 -5.808984 -5.3419 -9.6304  -4.3507
+TIME            11 -0.361091 -0.1164 -2.3473   2.0900
+TP              95  4.763264  4.1775  2.6045  21.2472
 ```
 
 ## Estatísticas por ano (baseado em exit_date)
@@ -42,15 +41,15 @@ TP              93  4.351868  3.5018   2.2162  21.2472
 ```
       n_trades  ret_medio_pct  ret_total_pct
 year                                        
-2015         5       0.865900         4.3295
-2016        30       0.759253        22.7776
-2017        15      -0.266167        -3.9925
-2018        19       0.891811        16.9444
-2019         9       2.078400        18.7056
-2020        16       3.611675        57.7868
-2021        18      -0.218556        -3.9340
-2022        15       2.906773        43.6016
-2023        14       0.534679         7.4855
-2024         6      -2.075333       -12.4520
-2025         5       0.923960         4.6198
+2015         2       4.486850         8.9737
+2016        23       3.295274        75.7913
+2017        18       0.591856        10.6534
+2018        19      -0.005942        -0.1129
+2019         9       2.012300        18.1107
+2020        19       3.906995        74.2329
+2021        21       0.245624         5.1581
+2022        11       2.683591        29.5195
+2023        17      -0.178753        -3.0388
+2024         8      -1.267725       -10.1418
+2025         2      -5.197150       -10.3943
 ```
