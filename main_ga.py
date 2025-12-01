@@ -40,13 +40,15 @@ if __name__ == "__main__":
         seed=42,
     )
 
+
+
     print("\n=== MELHOR INDIVÍDUO (10 anos inteiros) ===")
     print("Genoma:", best["genome"])
     print("Fitness:", best["fitness"])
     print("Retorno total (%):", best["total_return_pct"])
     print("Max Drawdown (%):", best["mdd_pct"])
-    print("Calmar:", best["calmar"])  # RETORNO ANUALIZADO
-    print("Sortino:", best["sortino"]) # retorno ajustado pelas perdas ruins
+    print("Calmar:", best["calmar"])  # RETORNO ANUALIZADO/|max drawdown|
+    print("Sortino:", best["sortino"]) # retorno ( excedente )/ volatilidade dos retornos negativos (risco de perda)
     print("N trades:", best["n_trades"])
     print("Retornos por janela (%):", best["window_returns"])
 

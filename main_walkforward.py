@@ -10,7 +10,7 @@ from evolution.ga import run_ga, evaluate_genome
 def walkforward_deslizante(
     Px,
     Py,
-    train_years=6,
+    train_years=2,
     test_years=1,
     population_size=120,
     generations=40,
