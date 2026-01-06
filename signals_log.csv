@@ -2,3 +2,4 @@ date,ticker_x,ticker_y,last_price_x,last_price_y,last_ret_x,threshold,tp,sl,lag,
 2025-11-20,PETR4.SA,VALE3.SA,33.0000,65.0000,-0.030000,-0.018123,0.028593,-0.037423,0,12,BUY_Y,debug manual
 2025-11-27,PETR4.SA,VALE3.SA,32.2300,66.5800,-0.001549,-0.016479,0.026738,-0.042184,0,12,FLAT,queda de X menor que o threshold; queda de X não é grande o bastante vs volatilidade
 2025-11-28,PETR4.SA,VALE3.SA,32.4000,66.3300,0.005275,-0.016479,0.026738,-0.042184,0,12,FLAT,queda de X menor que o threshold; queda de X não é grande o bastante vs volatilidade
+2025-12-01,PETR4.SA,VALE3.SA,31.7800,67.9200,-0.000315,-0.017842,0.021502,-0.050638,0,15,FLAT,queda de X menor que o threshold; queda de X não é grande o bastante vs volatilidade

@@ -88,7 +88,7 @@ def crossover(g1, g2):
     return _fix_constraints(child)
 
 
-def mutate(genome, mutation_rate=0.3):
+def mutate(genome, mutation_rate):
     """
     Mutação gaussiana nos contínuos + pequenos passos nos inteiros.
     mutation_rate = probabilidade de mutar cada gene.
@@ -104,23 +104,32 @@ def mutate(genome, mutation_rate=0.3):
     sl_range  = sl_hi  - sl_lo
 
     # threshold
-    if random.random() < mutation_rate:
-        g["threshold"] += random.gauss(0.0, 0.15 * thr_range)
+    # random.random() < mutation_rate:
+    #g["threshold"] = random.gauss(0.0, 0.15 * thr_range)*mutation_rate
+
+    gene_mute=random.randint(0,4)
+    
+    if gene_mute==0:
+        g["threshold"] += random.gauss(0.0, 0.15 * thr_range)*mutation_rate
 
     # tp
-    if random.random() < mutation_rate:
-        g["tp"] += random.gauss(0.0, 0.15 * tp_range)
+    #if random.random() < mutation_rate:
+    if gene_mute==1:
+        g["tp"] += random.gauss(0.0, 0.15 * tp_range)*mutation_rate
 
     # sl
-    if random.random() < mutation_rate:
-        g["sl"] += random.gauss(0.0, 0.15 * sl_range)
+    #if random.random() < mutation_rate:
+    if gene_mute==2:
+        g["sl"] += random.gauss(0.0, 0.15 * sl_range)*mutation_rate
 
     # lag
-    if random.random() < mutation_rate:
-        g["lag"] += random.choice([-1, 0, 1])
+    #if random.random() < mutation_rate:
+    if gene_mute==3:
+        g["lag"] += random.choice([-1, 0, 1])*mutation_rate
 
     # max_hold
-    if random.random() < mutation_rate:
-        g["max_hold"] += random.choice([-2, -1, 0, 1, 2])
+    #if random.random() < mutation_rate:
+    if gene_mute==4:
+        g["max_hold"] += random.choice([-2, -1, 0, 1, 2])*mutation_rate
 
     return _fix_constraints(g)

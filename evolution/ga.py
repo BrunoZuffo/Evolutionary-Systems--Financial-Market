@@ -153,11 +153,11 @@ def evaluate_genome(genome, Px, Py, fee=0.0005):
 
     # Combinação do fitness
     fitness = (
-        2.0 * calmar +      # Calmar pesa mais
-        1.5 * sortino +     # Sortino também
-        0.5 * total_ret     # retorno total com peso menor
-        - trade_penalty
-        - cons_penalty
+        #2.0 * calmar +      # Calmar pesa mais
+        #1.5 * sortino +     # Sortino também
+        1 * total_ret     # retorno total com peso menor
+        #- trade_penalty
+        #- cons_penalty
     )
 
     return {
@@ -188,7 +188,7 @@ def run_ga(
     population_size=150,
     generations=60,
     elite_frac=0.2,
-    mutation_rate=0.3,
+    mutation_rate=1,
     tournament_size=3,
     fee=0.0005,
     seed=42

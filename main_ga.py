@@ -35,7 +35,7 @@ if __name__ == "__main__":
     best, history = run_ga(
         Px, Py,
         population_size=150,
-        generations=60,
+        generations=200,
         fee=0.0005,
         seed=42,
     )
