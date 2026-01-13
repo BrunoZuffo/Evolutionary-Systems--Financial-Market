@@ -1,0 +1,8 @@
+numpy
+pandas
+matplotlib
+yfinance
+python-dateutil
+pytz
+requests
+certifi
