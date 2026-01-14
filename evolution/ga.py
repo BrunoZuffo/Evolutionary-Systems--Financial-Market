@@ -214,11 +214,39 @@ def run_ga(
 
     history = []
 
+
+
+    DELTA = 1e-6
+    count_stagnation = 0
+    best_prev = None 
+    mutation_rate_original = mutation_rate
+    MUT_MAX = 0.8
+
+
+
     for gen in range(generations):
         # 2) Ordena por fitness -> ELITISMO
         population.sort(key=lambda ind: ind["fitness"], reverse=True)
         best = population[0]
         history.append(best["fitness"]) #cópia dos melhores
+
+        best_now=best["fitness"]
+        
+        if best_prev is not None:
+            improv= best_now-best_prev
+            if improv<=DELTA:
+                count_stagnation=count_stagnation+1
+            else:
+                count_stagnation=0
+                mutation_rate=mutation_rate_original
+        else:
+            improv = None
+            count_stagnation=0
+        if count_stagnation>10:
+            print(f"   Δfit={improv_str} | stagn={count_stagnation} | mut={mutation_rate:.4f}")
+            mutation_rate=min(MUT_MAX,mutation_rate*10)
+            count_stagnation=0
+        best_prev=best_now
 
         print(
             f"Geração {gen+1}/{generations} | "
@@ -229,6 +257,13 @@ def run_ga(
             f"Sortino: {best['sortino']:.2f} | "
             f"Trades: {best['n_trades']}"
         )
+
+        if improv is None:
+            improv_str = "None"
+        else:
+            improv_str = f"{improv:.6g}"
+        print(f"   Δfit={improv_str} | stagn={count_stagnation} | mut={mutation_rate:.4f}")
+
 
         # 3) Elitismo
         elite_count = max(1, int(elite_frac * population_size))
