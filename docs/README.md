@@ -116,9 +116,13 @@ python -m venv .venv
 ### **Ativar**
 Windows:
 ```bash
-.\.venv\Scriptsctivate
+.\.venv\Scripts\Activate.ps1
 ```
-
+Se der erro de política:
+```bash
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+```
 ### **Instalar dependências**
 ```bash
 pip install -r requirements.txt
