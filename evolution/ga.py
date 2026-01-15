@@ -4,6 +4,7 @@ import numpy as np
 from core.leadlag import backtest_lead_lag
 from evolution.genome import random_genome, mutate, crossover
 
+import copy
 
 def max_drawdown(equity_curve):
     """
@@ -214,46 +215,63 @@ def run_ga(
 
     history = []
 
-<<<<<<< HEAD
 
 
+       # ---- CONTROLES ----
     DELTA = 1e-6
-    count_stagnation = 0
-    best_prev = None 
+    count_stagnation = 0          # controla a mutação adaptativa (como você já fez)
+    count_genocide = 0            # controla o genocídio (NOVO, separado)
+    best_prev = None
     mutation_rate_original = mutation_rate
     MUT_MAX = 0.8
 
+    # ---- GENOCÍDIO (professor) ----
+    best_of_best = None
+    best_of_best_fit = -float("inf")
 
+    genocide_toggle = 1      # alterna 1 e 2
+    GENOCIDE_STAG = 30       # qtas gerações SEM melhorar pra ativar genocídio
 
-=======
->>>>>>> cbdfd3fb8f64e02ff5dccaf1f863c57cad5e1708
     for gen in range(generations):
-        # 2) Ordena por fitness -> ELITISMO
+        # 1) Ordena e pega o melhor da geração
         population.sort(key=lambda ind: ind["fitness"], reverse=True)
         best = population[0]
-        history.append(best["fitness"]) #cópia dos melhores
 
-<<<<<<< HEAD
-        best_now=best["fitness"]
-        
-        if best_prev is not None:
-            improv= best_now-best_prev
-            if improv<=DELTA:
-                count_stagnation=count_stagnation+1
-            else:
-                count_stagnation=0
-                mutation_rate=mutation_rate_original
-        else:
+        # 2) Atualiza best_of_best (melhor global)
+        if best["fitness"] > best_of_best_fit:
+            best_of_best_fit = best["fitness"]
+            best_of_best = copy.deepcopy(best["genome"])
+
+        history.append(best["fitness"])
+
+        # 3) Estagnação / mutação adaptativa (MANTENDO seu jeito)
+        best_now = best["fitness"]
+
+        if best_prev is None:
             improv = None
-            count_stagnation=0
-        if count_stagnation>10:
-            print(f"   Δfit={improv_str} | stagn={count_stagnation} | mut={mutation_rate:.4f}")
-            mutation_rate=min(MUT_MAX,mutation_rate*10)
-            count_stagnation=0
-        best_prev=best_now
+            count_stagnation = 0
+            count_genocide = 0
+        else:
+            improv = best_now - best_prev
 
-=======
->>>>>>> cbdfd3fb8f64e02ff5dccaf1f863c57cad5e1708
+            if improv <= DELTA:
+                count_stagnation += 1
+                count_genocide += 1
+            else:
+                count_stagnation = 0
+                count_genocide = 0
+                mutation_rate = mutation_rate_original
+
+        best_prev = best_now
+
+        improv_str = "None" if improv is None else f"{improv:.6g}"
+
+        # aumenta mutação se estagnou 10 gerações (e zera SÓ esse contador)
+        if count_stagnation > 10:
+            mutation_rate = min(MUT_MAX, mutation_rate * 10)
+            count_stagnation = 0
+
+        # prints
         print(
             f"Geração {gen+1}/{generations} | "
             f"Fit: {best['fitness']:.2f} | "
@@ -263,36 +281,58 @@ def run_ga(
             f"Sortino: {best['sortino']:.2f} | "
             f"Trades: {best['n_trades']}"
         )
+        print(f"   Δfit={improv_str} | stag_mut={count_stagnation} | stag_gen={count_genocide} | mut={mutation_rate:.4f}")
 
-<<<<<<< HEAD
-        if improv is None:
-            improv_str = "None"
-        else:
-            improv_str = f"{improv:.6g}"
-        print(f"   Δfit={improv_str} | stagn={count_stagnation} | mut={mutation_rate:.4f}")
+        # 4) GENOCÍDIO (professor): alterna Tipo 1 e Tipo 2
+        if count_genocide >= GENOCIDE_STAG:
+            print(f"🔥 GENOCÍDIO ativado na geração {gen+1}! tipo={genocide_toggle}")
 
+            new_pop = []
 
-=======
->>>>>>> cbdfd3fb8f64e02ff5dccaf1f863c57cad5e1708
-        # 3) Elitismo
+            if genocide_toggle == 1:
+                # Tipo 1: mata todo mundo, mantém o melhor de todos (best_of_best)
+                keep = copy.deepcopy(best_of_best) if best_of_best is not None else copy.deepcopy(best["genome"])
+                eval_res = evaluate_genome(keep, Px, Py, fee)
+                new_pop.append({"genome": keep, **eval_res})
+
+            # Tipo 2: mata todo mundo (new_pop começa vazio mesmo)
+
+            # repopula com random
+            while len(new_pop) < population_size:
+                g = random_genome()
+                eval_res = evaluate_genome(g, Px, Py, fee)
+                new_pop.append({"genome": g, **eval_res})
+
+            population = new_pop
+
+            # alterna 1 <-> 2
+            genocide_toggle = 2 if genocide_toggle == 1 else 1
+
+            # reseta controles
+            count_stagnation = 0
+            count_genocide = 0
+            mutation_rate = mutation_rate_original
+
+            # pula a reprodução nessa geração (já recriou população inteira)
+            continue
+
+        # 5) Elitismo + reprodução normal (se NÃO teve genocídio)
         elite_count = max(1, int(elite_frac * population_size))
         new_population = population[:elite_count]
 
-        # 4) Geração de filhos
-        while len(new_population) < population_size: #seleção por torneio
+        while len(new_population) < population_size:
             parent1 = tournament_selection(population, k=tournament_size)
             parent2 = tournament_selection(population, k=tournament_size)
-            child_genome = crossover(parent1["genome"], parent2["genome"]) #crossover
-            child_genome = mutate(child_genome, mutation_rate=mutation_rate) #mutação
+
+            child_genome = crossover(parent1["genome"], parent2["genome"])
+            child_genome = mutate(child_genome, mutation_rate=mutation_rate)  # sua mutação fica igual
 
             eval_res = evaluate_genome(child_genome, Px, Py, fee)
-            new_population.append({
-                "genome": child_genome,
-                **eval_res,
-            })
+            new_population.append({"genome": child_genome, **eval_res})
 
         population = new_population
 
     population.sort(key=lambda ind: ind["fitness"], reverse=True)
     best = population[0]
+    
     return best, history
