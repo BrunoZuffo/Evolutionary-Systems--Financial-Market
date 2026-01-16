@@ -184,8 +184,10 @@ Cada trade inclui:
 ---
 
 ## 🎥 8. Vídeo Explicativo 
--📌 YouTube https://youtu.be/pzPEMXAzwTs?si=m1hICZSx_i3tMVSa
--📌 Drive https://drive.google.com/file/d/1lRiQY_SzhmTArtnsOfDVZFpYXCiWmpQy/view?usp=sharing
+
+- YouTube https://youtu.be/pzPEMXAzwTs?si=m1hICZSx_i3tMVSa
+- Drive https://drive.google.com/file/d/1lRiQY_SzhmTArtnsOfDVZFpYXCiWmpQy/view?usp=sharing 
+
 ---
 
 ## 📚 9. Referências
