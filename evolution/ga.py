@@ -244,7 +244,7 @@ def run_ga(
 
         history.append(best["fitness"])
 
-        # 3) Estagnação / mutação adaptativa (MANTENDO seu jeito)
+        # 3) Estagnação / mutação adaptativa
         best_now = best["fitness"]
 
         if best_prev is None:
