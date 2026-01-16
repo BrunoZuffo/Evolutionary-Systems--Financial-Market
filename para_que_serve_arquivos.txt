@@ -1,0 +1,11 @@
+core/                    # lógica de estratégia Lead/Lag
+data/                    # loaders de preços
+evolution/               # genetic algorithm + genoma
+tests/                   # testes automatizados
+main_ga.py              # roda o GA completo
+main_walkforward.py     # treinamento com walk-forward
+realtime_signal.py      # geração de sinais com melhor genoma
+realtime_bot.py         # simula trades com esses sinais
+analyze_signals.py      # análise de qualidade de sinais
+analyze_results.py      # compara com baselines
+best_genome.json        # salva melhor estratégia
