@@ -184,7 +184,7 @@ Cada trade inclui:
 ---
 
 ## 🎥 8. Vídeo Explicativo (Obrigatório)
-📌 Link será inserido aqui após gravação.
+📌 (https://youtu.be/pzPEMXAzwTs?si=m1hICZSx_i3tMVSa)
 
 ---
 
